@@ -72,3 +72,13 @@ Sistema que automatiza el movimiento de los datos desde un lugar a otro.
 #### ETL Pipeline (_Extract, Transform, Load_)
 
     [Fuentes] -> Extraer (datos sin procesar) -> [Transformar] -> Preparar los datos (cargar) -> Almacenar -> Analizar
+
+## Limpieza de datos
+
+Proceso de identificar y solucionar problemas en los datos, con el objetivo de asegurar precisión y consistencia.
+
+Algunos ejemplos de limpieza de datos:
+
+- Limpiar registros duplicados
+- Llenar registros vacios
+- Estandarizar datos (consistencia)
