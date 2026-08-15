@@ -1,6 +1,6 @@
-------------------------
+-----------------------
 # Declaración SELECT #
-------------------------
+-----------------------
 
 select first_name, last_name, age, (age * 10) + 10 + 10 from employee_demographics;
 # PEMDAS (Parentesis, Exponente, Multiplicación, División, Suma, Resta)
@@ -30,3 +30,21 @@ select * from employee_demographics where first_name like '%jer%';
 
 -- Seleccionar registros que empiecen con un caracter especifico y seguido tengan n cantidad de caracteres
 select * from employee_demographics where first_name like 'a__'; -- 2 caracteres luego de `a`
+
+---------------------
+# Clausula Group By #
+---------------------
+
+-- Agrupar registros por genero y obtener el promedio de edad por cada registro agrupado
+select gender, avg(age), max(age), min(age), count(age) from employee_demographics group by gender;
+# AVG() - Valor promedio
+# MAX() - Valor máximo
+# MIN() - Valor mínimo
+# COUNT() - Cantidad de registros
+
+---------------------
+# Clausula Order By #
+---------------------
+
+-- Seleccionar los registros ordenados por edad de forma descendente
+select * from employee_demographics order by age desc;
