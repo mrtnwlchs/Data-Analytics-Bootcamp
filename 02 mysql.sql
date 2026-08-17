@@ -1,6 +1,6 @@
------------------------
+----------------------
 # Declaración SELECT #
------------------------
+----------------------
 
 select first_name, last_name, age, (age * 10) + 10 + 10 from employee_demographics;
 # PEMDAS (Parentesis, Exponente, Multiplicación, División, Suma, Resta)
@@ -48,3 +48,31 @@ select gender, avg(age), max(age), min(age), count(age) from employee_demographi
 
 -- Seleccionar los registros ordenados por edad de forma descendente
 select * from employee_demographics order by age desc;
+
+-------------------
+# WHERE vs HAVING #
+-------------------
+
+-- HAVING Permite filtrar registros obtenidos mediante funciones de agregación
+select gender, avg(age) from employee_demographics
+group by gender
+having avg(age) > 40;
+
+select occupation, avg(salary) from employee_salary
+where occupation like '%manager%'
+group by occupation
+having avg(salary) > 75000;
+
+-----------------
+# LIMIT & ALIAS #
+-----------------
+
+-- limitar la cantidad de registros obtendidos
+select * from employee_demographics
+order by age desc
+limit 3;
+
+-- Crear un alias reutilizable en la consulta
+select occupation, avg(salary) avg_salary from employee_salary
+group by occupation
+having avg_salary > 70000; -- se reutiliza el alias avg_salary para aplicar el filtro
