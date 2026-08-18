@@ -8,9 +8,9 @@ select first_name, last_name, age, (age * 10) + 10 + 10 from employee_demographi
 -- Seleccionar registros únicos
 select distinct(gender) from employee_demographics;
 
------------------
-# Filtrar datos #
------------------
+---------------------------
+# Filtrar datos con WHERE #
+---------------------------
 
 -- Seleccionar registros que coincidan con una condición
 select * from employee_demographics where first_name = 'Leslie';
@@ -32,7 +32,7 @@ select * from employee_demographics where first_name like '%jer%';
 select * from employee_demographics where first_name like 'a__'; -- 2 caracteres luego de `a`
 
 ---------------------
-# Clausula Group By #
+# Clausula GROUP BY #
 ---------------------
 
 -- Agrupar registros por genero y obtener el promedio de edad por cada registro agrupado
@@ -43,7 +43,7 @@ select gender, avg(age), max(age), min(age), count(age) from employee_demographi
 # COUNT() - Cantidad de registros
 
 ---------------------
-# Clausula Order By #
+# Clausula ORDER BY #
 ---------------------
 
 -- Seleccionar los registros ordenados por edad de forma descendente
@@ -59,7 +59,7 @@ group by gender
 having avg(age) > 40;
 
 select occupation, avg(salary) from employee_salary
-where occupation like '%manager%'
+where occupation like '%manager%' -- WHERE se utiliza antes de la función de agrupación para filtrar registros
 group by occupation
 having avg(salary) > 75000;
 
@@ -73,7 +73,7 @@ order by age desc
 limit 3;
 
 -- Crear un alias reutilizable en la consulta
-select occupation, avg(salary) avg_salary from employee_salary
+select occupation, avg(salary) alias avg_salary from employee_salary
 group by occupation
 having avg_salary > 70000; -- se reutiliza el alias avg_salary para aplicar el filtro
 
@@ -83,8 +83,12 @@ having avg_salary > 70000; -- se reutiliza el alias avg_salary para aplicar el f
 
 -- INNER JOIN
 select * from employee_demographics dem
-join employee_salary sal -- si employee_id existe en una tabla  y en otra no, se omite de la consulta
+join employee_salary sal -- si employee_id no existe en una de las tablas, el registro no se añade a los registros obtenidos
 on dem.employee_id = sal.employee_id;
+
+select emp1.first_name first_name_emp1, emp1.last_name last_name_emp1
+from employee_demographics emp1
+inner join employee_salary emp2; -- retorna los registros de la misma tabla combinados en emparejamientos por file empleado1 - empleado2
 
 -- LEFT JOIN
 select * from employee_demographics dem
@@ -96,21 +100,16 @@ select * from employee_demographics dem
 right join employee_salary sal -- retorna todos los registros de la tabla de la derecha, aunque employee_id no exista en la de la izquierda
 on dem.employee_id = sal.employee_id;
 
--- INNER JOIN
-select emp1.first_name first_name_emp1, emp1.last_name last_name_emp1
-from employee_demographics emp1
-inner join employee_salary emp2; -- retorna los registros de la misma tabla combinados en emparejamientos por file empleado1 - empleado2
-
--- JOIN MULTIPLE TABLES
+-- JOIN (Multiples tablas)
 select ed.first_name, ed.last_name, ed.age, ed.gender, pd.department_name from employee_demographics ed
 join employee_salary es on ed.employee_id = es.employee_id
-join parks_departments pd on es.dept_id = pd.department_id; -- el join se realiza con la segunda tabla
+join parks_departments pd on es.dept_id = pd.department_id; -- el JOIN se realiza entre la segunda tabla y la tabla intermedia
 
 ---------
 # UNION #
 ---------
 
--- unir los registros de 2 o más tablas. (Todas las tablas involucradas en el UNION deben retornar el mismo numero de columnas)
+-- Unir los registros de 2 o más tablas. (Todas las tablas involucradas en el UNION deben retornar el mismo numero de columnas)
 select first_name, last_name, 'old man' as label from employee_demographics
 where age > 40 and gender = 'Male'
 union
@@ -125,28 +124,31 @@ order by first_name desc;
 # Funciones de texto #
 ----------------------
 
--- Cantidad de caracteres de una cadena de texto
+-- LENGTH() - Cantidad de caracteres de una cadena de texto
 select first_name, length(first_name) from employee_demographics;
 
--- Convertir caracteres en minuscula
+-- UPPER() - Convertir caracteres de un texto a mayusculas
+select first_name, upper(first_name) from employee_demographics;
+
+-- LOWER() - Convertir caracteres de un texto a minuscula
 select first_name, lower(first_name) from employee_demographics;
 
--- Remover espacios en blanco a la izquierda y derecha de un texto
+-- TRIM() - Remover espacios en blanco a la izquierda y derecha de un texto
 select trim('           sky       ');
 
--- Remover espacios a la izquierda de un texto
+-- LTRIM() - Remover espacios a la izquierda de un texto
 select ltrim('           sky       ');
 
--- Remover espacios a la derecha de un texto
+-- RTRIM() - Remover espacios a la derecha de un texto
 select rtrim('           sky       ');
 
--- Obtener una porción especifica de una cadena de texto
+-- SUBSTR() - Obtener una porción especifica de una cadena de texto
 select first_name, substr(first_name, 1, 2) from employee_demographics;
 
--- Reemplazar caracteres en una cadena de texto
-select  first_name, replace(first_name, 'a', 'x') from employee_demographics;
+-- REPLACE() - Reemplazar caracteres en una cadena de texto
+select first_name, replace(first_name, 'a', 'x') from employee_demographics;
 
--- Obtener la posición de caracteres en una cadena de texto
+-- LOCATE() - Obtener la posición de caracteres en una cadena de texto
 select first_name, locate('rk', first_name) from employee_demographics;
 
 -- Unir 2 o más cadenas de texto
