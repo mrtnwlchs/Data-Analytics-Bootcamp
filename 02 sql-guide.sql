@@ -151,5 +151,5 @@ select first_name, replace(first_name, 'a', 'x') from employee_demographics;
 -- LOCATE() - Obtener la posición de caracteres en una cadena de texto
 select first_name, locate('rk', first_name) from employee_demographics;
 
--- Unir 2 o más cadenas de texto
+-- CONCAT() - Unir 2 o más cadenas de texto
 select concat(first_name, ' ', last_name) as full_name from employee_demographics;
