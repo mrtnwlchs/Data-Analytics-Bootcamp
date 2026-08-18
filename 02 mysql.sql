@@ -67,7 +67,7 @@ having avg(salary) > 75000;
 # LIMIT & ALIAS #
 -----------------
 
--- limitar la cantidad de registros obtendidos
+-- Limitar la cantidad de registros obtendidos
 select * from employee_demographics
 order by age desc
 limit 3;
@@ -76,3 +76,78 @@ limit 3;
 select occupation, avg(salary) avg_salary from employee_salary
 group by occupation
 having avg_salary > 70000; -- se reutiliza el alias avg_salary para aplicar el filtro
+
+--------
+# JOIN #
+--------
+
+-- INNER JOIN
+select * from employee_demographics dem
+join employee_salary sal -- si employee_id existe en una tabla  y en otra no, se omite de la consulta
+on dem.employee_id = sal.employee_id;
+
+-- LEFT JOIN
+select * from employee_demographics dem
+left join employee_salary sal -- retorna todos los registros de la tabla de la izquierda, aunque employee_id no exista en la de la derecha
+on dem.employee_id = sal.employee_id;
+
+-- RIGHT JOIN
+select * from employee_demographics dem
+right join employee_salary sal -- retorna todos los registros de la tabla de la derecha, aunque employee_id no exista en la de la izquierda
+on dem.employee_id = sal.employee_id;
+
+-- INNER JOIN
+select emp1.first_name first_name_emp1, emp1.last_name last_name_emp1
+from employee_demographics emp1
+inner join employee_salary emp2; -- retorna los registros de la misma tabla combinados en emparejamientos por file empleado1 - empleado2
+
+-- JOIN MULTIPLE TABLES
+select ed.first_name, ed.last_name, ed.age, ed.gender, pd.department_name from employee_demographics ed
+join employee_salary es on ed.employee_id = es.employee_id
+join parks_departments pd on es.dept_id = pd.department_id; -- el join se realiza con la segunda tabla
+
+---------
+# UNION #
+---------
+
+-- unir los registros de 2 o más tablas. (Todas las tablas involucradas en el UNION deben retornar el mismo numero de columnas)
+select first_name, last_name, 'old man' as label from employee_demographics
+where age > 40 and gender = 'Male'
+union
+select first_name, last_name, 'old lady' as label from employee_demographics
+where age > 40 and gender = 'Female'
+union
+select first_name, last_name, 'high salary' as label from employee_salary
+where salary > 70000
+order by first_name desc;
+
+----------------------
+# Funciones de texto #
+----------------------
+
+-- Cantidad de caracteres de una cadena de texto
+select first_name, length(first_name) from employee_demographics;
+
+-- Convertir caracteres en minuscula
+select first_name, lower(first_name) from employee_demographics;
+
+-- Remover espacios en blanco a la izquierda y derecha de un texto
+select trim('           sky       ');
+
+-- Remover espacios a la izquierda de un texto
+select ltrim('           sky       ');
+
+-- Remover espacios a la derecha de un texto
+select rtrim('           sky       ');
+
+-- Obtener una porción especifica de una cadena de texto
+select first_name, substr(first_name, 1, 2) from employee_demographics;
+
+-- Reemplazar caracteres en una cadena de texto
+select  first_name, replace(first_name, 'a', 'x') from employee_demographics;
+
+-- Obtener la posición de caracteres en una cadena de texto
+select first_name, locate('rk', first_name) from employee_demographics;
+
+-- Unir 2 o más cadenas de texto
+select concat(first_name, ' ', last_name) as full_name from employee_demographics;
