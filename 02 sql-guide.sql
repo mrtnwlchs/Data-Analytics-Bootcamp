@@ -153,3 +153,45 @@ select first_name, locate('rk', first_name) from employee_demographics;
 
 -- CONCAT() - Unir 2 o más cadenas de texto
 select concat(first_name, ' ', last_name) as full_name from employee_demographics;
+
+--------------------
+# Declaración CASE #
+--------------------
+
+-- Estructura condicional tipo if-else
+select first_name, last_name,
+	case -- se añade una nueva columna age_label cuyo valor depende de la condición evaluada
+		when age <= 30 then 'young'
+        when age between 31 and 50 then 'old'
+		when age >= 50 then 'granny'
+	end as age_label
+from employee_demographics;
+
+-- a partir del salario o del departamento, el salario tendra un incremento
+select es.first_name, es.last_name, es.salary, pd.department_name,
+	case
+		when es.salary < 50000 then ((salary * 5) / 100) + salary
+        when es.salary > 50000 then ((salary * 7) / 100) + salary
+        else salary
+	end as new_salary,
+    case
+		when pd.department_name = 'Finance' then ((salary * 10) / 100) + salary
+        else 0
+	end bonus_salary
+from employee_salary es
+left join parks_departments pd on es.dept_id = pd.department_id;
+
+----------------
+# Subconsultas #
+----------------
+
+select * from employee_demographics
+where employee_id in ( -- los empleados se obtienen a partir de los ids retornados por la subconsulta a la tabla employee_salary
+	select employee_id from employee_salary where dept_id = 1
+);
+
+-- la subconsulta agrupa los registros por genero, la consulta principal obtiene el promedio entre los maximos de edad
+select avg(max_age) from (
+	select gender, avg(age) avg_age, max(age) max_age, min(age) min_age, count(age) count_age from employee_demographics
+	group by gender
+) as agg_table;
