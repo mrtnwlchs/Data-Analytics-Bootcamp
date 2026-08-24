@@ -190,8 +190,27 @@ where employee_id in ( -- los empleados se obtienen a partir de los ids retornad
 	select employee_id from employee_salary where dept_id = 1
 );
 
--- la subconsulta agrupa los registros por genero, la consulta principal obtiene el promedio entre los maximos de edad
+-- agrupar los registros por genero, la consulta principal obtiene el promedio entre los maximos de edad obtenidos
 select avg(max_age) from (
 	select gender, avg(age) avg_age, max(age) max_age, min(age) min_age, count(age) count_age from employee_demographics
 	group by gender
 ) as agg_table;
+
+------------------------
+# Funciones de ventana #
+------------------------
+
+select dm.first_name, dm.gender,
+avg(salary) -- Obtener el promedio de salario por genero sin colapsar las filas como ocurre con el la declaración group by
+over(partition by gender) as rolling_avg from employee_demographics dm
+left join employee_salary sal on dm.employee_id = sal.employee_id;
+
+select dm.first_name, dm.gender, sal.salary,
+sum(sal.salary) -- Obtener la suma del salario por genero sin colapsar las filas
+over(partition by gender) as rolling_total from employee_demographics dm
+left join employee_salary sal on dm.employee_id = sal.employee_id;
+
+select dm.first_name,
+avg(sal.salary) over(partition by gender) as avg_salary, -- Obtener promedio de salario por genero
+row_number() over(partition by dm.gender order by sal.salary desc) from employee_demographics dm -- Asignar un numero entero secuencial por cada registro de la consulta
+left join employee_salary sal on dm.employee_id = sal.employee_id;
