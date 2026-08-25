@@ -200,17 +200,33 @@ select avg(max_age) from (
 # Funciones de ventana #
 ------------------------
 
+------------------------
+# Funciones de ventana #
+------------------------
+
 select dm.first_name, dm.gender,
-avg(salary) -- Obtener el promedio de salario por genero sin colapsar las filas como ocurre con el la declaración group by
-over(partition by gender) as rolling_avg from employee_demographics dm
+-- Obtener el promedio de salario por genero sin colapsar las filas como ocurre con la declaración group by
+avg(salary) over(partition by gender) as rolling_avg from employee_demographics dm
 left join employee_salary sal on dm.employee_id = sal.employee_id;
 
 select dm.first_name, dm.gender, sal.salary,
-sum(sal.salary) -- Obtener la suma del salario por genero sin colapsar las filas
-over(partition by gender) as rolling_total from employee_demographics dm
+-- Obtener la suma del salario por genero sin colapsar las filas
+sum(sal.salary) over(partition by gender) as rolling_total from employee_demographics dm
 left join employee_salary sal on dm.employee_id = sal.employee_id;
 
-select dm.first_name,
-avg(sal.salary) over(partition by gender) as avg_salary, -- Obtener promedio de salario por genero
-row_number() over(partition by dm.gender order by sal.salary desc) from employee_demographics dm -- Asignar un numero entero secuencial por cada registro de la consulta
+select dm.first_name, sal.salary,
+-- Obtener promedio de salario por genero sin colapsar las filas
+avg(sal.salary) over(partition by gender) as avg_salary,
+-- Asignar un numero entero secuencial por cada registro de la consulta
+row_number() over(partition by dm.gender order by sal.salary desc) from employee_demographics dm
 left join employee_salary sal on dm.employee_id = sal.employee_id;
+
+select dm.first_name, salary,
+-- Obtener promedio de salario por genero sin colapsar las filas
+avg(sal.salary) over(partition by gender),
+-- Asignar un numero entero secuencial por cada registro de la consulta
+row_number() over(partition by gender order by sal.salary) as rolling_row_number,
+-- Asignar un numero entero secuencial, si 2 registros comparten el mismo valor en la columna ordenada, se asigna el mismo numero secuencial
+rank() over(partition by gender order by sal.salary) as rolling_rank
+from employee_demographics dm
+left join employee_salary sal on sal.employee_id = dm.employee_id;
