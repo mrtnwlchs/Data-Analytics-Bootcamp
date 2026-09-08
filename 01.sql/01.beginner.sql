@@ -1,0 +1,82 @@
+----------------------
+# Declaración SELECT #
+----------------------
+
+select first_name, last_name, age, (age * 10) + 10 + 10 from employee_demographics;
+# PEMDAS (Parentesis, Exponente, Multiplicación, División, Suma, Resta)
+
+# Seleccionar registros únicos
+select distinct(gender) from employee_demographics;
+
+---------------------------
+# Filtrar datos con WHERE #
+---------------------------
+
+# Seleccionar registros que coincidan con una condición
+select * from employee_demographics where first_name = 'Leslie';
+select * from employee_salary where salary >= 50000;
+select * from employee_demographics where gender = 'Female';
+
+# Seleccionar registros que coincidan con más de una condición
+select * from employee_demographics where birth_date > '1985-01-01' and gender = 'Male';
+select * from employee_demographics where (first_name = 'Leslie' and age = 44) or age > 55;
+
+--------------------
+# Declaración LIKE #
+--------------------
+
+# Seleccionar registros a partir de una coincidencia parcial de texto
+select * from employee_demographics where first_name like '%jer%';
+
+# Seleccionar registros que empiecen con un caracter especifico y seguido tengan n cantidad de caracteres
+select * from employee_demographics where first_name like 'a__'; -- 2 caracteres luego de `a`
+
+---------------------
+# Clausula GROUP BY #
+---------------------
+
+# Agrupar registros por genero y obtener el promedio de edad, edad máxima, edad mínima y conteo de registros por genero
+select gender, avg(age), max(age), min(age), count(age) from employee_demographics group by gender;
+
+---------------------------
+# Funciones de agregación #
+---------------------------
+# AVG() 	-> Valor promedio
+# MAX() 	-> Valor máximo
+# MIN() 	-> Valor mínimo
+# COUNT() 	-> Conteo de registros
+
+---------------------
+# Clausula ORDER BY #
+---------------------
+
+# Seleccionar los registros ordenados por edad de forma descendente
+select * from employee_demographics order by age desc;
+
+-------------------
+# WHERE vs HAVING #
+-------------------
+
+# HAVING Permite filtrar registros obtenidos mediante funciones de agregación
+select gender, avg(age) from employee_demographics
+group by gender
+having avg(age) > 40;
+
+select occupation, avg(salary) from employee_salary
+where occupation like '%manager%' # WHERE se utiliza antes de la función de agrupación para filtrar registros
+group by occupation
+having avg(salary) > 75000;
+
+-----------------
+# LIMIT & ALIAS #
+-----------------
+
+# Limitar la cantidad de registros retornados por la consulta
+select * from employee_demographics
+order by age desc
+limit 3;
+
+# Crear un alias reutilizable en la consulta
+select occupation, avg(salary) avg_salary from employee_salary
+group by occupation
+having avg_salary > 70000; -- se reutiliza el alias avg_salary para aplicar el filtro
