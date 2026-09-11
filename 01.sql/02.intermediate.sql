@@ -112,3 +112,32 @@ select avg(max_age) from (
 	select gender, max(age) max_age from employee_demographics
 	group by gender -- agrupar los registros de la subconsulta por genero
 ) as agg_table;
+
+------------------------
+# Funciones de ventana #
+------------------------
+
+select dm.first_name, dm.gender,
+avg(salary) over(partition by gender) as rolling_avg -- obtener el salario promedio por genero sin colapsar las filas
+from employee_demographics dm
+left join employee_salary sal on dm.employee_id = sal.employee_id;
+
+select dm.first_name, dm.gender, sal.salary,
+sum(sal.salary) over(partition by gender) as rolling_total -- obtener la suma del salario por genero sin colapsar las filas
+from employee_demographics dm
+left join employee_salary sal on dm.employee_id = sal.employee_id;
+
+select dm.first_name, sal.salary, dm.gender,
+-- obtener los registros agrupados por genero sin colapsar las filas
+-- ordenar los registros por genero a partir del salario de forma descendente
+row_number() over(partition by dm.gender order by sal.salary desc) as rolling_row_number -- obtener el número de la fila a partir del ordenamiento
+from employee_demographics dm
+left join employee_salary sal on dm.employee_id = sal.employee_id;
+
+select dm.first_name, salary, dm.gender,
+-- obtener el salario promedio agrupado por genero sin colapsar las filas
+-- por cada grupo (genero) ordenar las filas por salario de forma ascendente
+avg(sal.salary) over(partition by gender) as avg_salary, 
+row_number() over(partition by gender order by sal.salary) as rolling_row_number -- obtener el número de la fila a partir del ordenamiento
+from employee_demographics dm
+left join employee_salary sal on sal.employee_id = dm.employee_id;
