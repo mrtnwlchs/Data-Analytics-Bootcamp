@@ -22,10 +22,10 @@ select * from CTE_EXAMPLE2;
 # Tablas temporales #
 ---------------------
 
-# crear una tabla temporal y posteriormente insertar nuevos datos
+# crear una tabla temporal y posteriormente insertar nuevos datos en esta
 create temporary table temp_table(
 	first_name varchar(50),
-	last_name varchar(50),
+ 	last_name varchar(50),
 	favorite_movie varchar(100)
 );
 insert into temp_table values('Martin', 'Wilches', 'Spiderman');
@@ -33,3 +33,25 @@ insert into temp_table values('Martin', 'Wilches', 'Spiderman');
 # crear una tabla temporal a partir de una tabla ya existente
 create temporary table salary_over_50k
 select * from employee_salary where salary >= 50000;
+
+------------------------------
+# Procedimientos almacenados #
+------------------------------
+
+# crear un prodedimiento almacenado
+create procedure large_salary()
+select * from employee_salary where salary >= 50000;
+
+# invocar la logica del procedimiento almacenado
+call large_salary();
+
+# crear un procedimiento de multiples declaraciones
+delimiter $$ -- especificar que el delimitador de las consultas no va a ser ; para no interrumpir el llamado del procedimiento
+create procedure large_salary2()	
+begin
+	select * from employee_salary where salary >= 50000;
+    select * from employee_salary where salary > 10000;
+end $$
+delimiter ; -- restaurar el delimitador por defecto
+
+call large_salary2()
