@@ -54,4 +54,34 @@ begin
 end $$
 delimiter ; -- restaurar el delimitador por defecto
 
-call large_salary2()
+call large_salary2();
+
+# prodecimientos almacenados con parametros
+delimiter $$
+create procedure large_salary3(employee_id_param INT)
+begin
+	select salary from employee_salary
+    where employee_id = employee_id_param;
+end $$
+delimiter ;
+
+call large_salary3(1);
+
+----------------------
+# Triggers y eventos #
+----------------------
+
+# Los triggers son bloques de código que se ejecutan cuando sucede un evento en una tabla
+delimiter $$
+create trigger insert_employee_demographics -- crear trigger
+after insert on employee_salary -- despues de insertar un registro en la tabla employee_salary
+for each row -- se ejecuta el trigger una vez por cada fila afectada
+	begin
+		-- new guarda el nuevo valor, el cual se usa para insertar en la tabla employee_demographics cuando se ejecuta el disparador
+		insert into employee_demographics(employee_id, first_name, last_name)
+        values(NEW.employee_id, NEW.first_name, NEW.last_name);
+	end $$
+delimiter ;
+
+insert into employee_salary(employee_id, first_name, last_name, occupation, salary)
+values (13, 'Martin', 'Wilches', 'Data Anallyst', 1000000);
