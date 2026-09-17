@@ -85,3 +85,14 @@ delimiter ;
 
 insert into employee_salary(employee_id, first_name, last_name, occupation, salary)
 values (13, 'Martin', 'Wilches', 'Data Anallyst', 1000000);
+
+# Los eventos se ejecutan en un horario especifico
+delimiter $$
+create event delete_old_employee -- crear evento
+on schedule every 60 second -- programado para ejecutarse cada 60 segundos
+do
+begin
+	delete from employee_demographics
+    where age > 60;
+end $$
+delimiter ;
