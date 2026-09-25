@@ -48,10 +48,21 @@ from layoffs_staging;
 
 # eliminar los registros duplicados
 delete from layoffs_staging2 where row_num > 1;
-# eliminar la columna utilizada en la tabla de ensayo para referenciar los duplicados
-alter table layoffs_staging2 drop column row_num;
 
 -- 2. Estandarizar los datos
+
+# remover espacios en blanco en la columna company
+update layoffs_staging2 set company = trim(company);
+
+# normalizar las ocurrencias de `Crypto` en la columna industry
+update layoffs_staging2 set industry = 'Crypto' where industry like 'crypto%';
+
+# normalizar las ocurrencias de `United States` removiendo caracteres adicionales
+update layoffs_staging2 set country = trim(trailing '.' from country) where country = 'United States';
+
+# modificar formato del campo `date` a un campo de fecha valido
+update layoffs_staging2 set `date` = str_to_date(`date`, '%m/%d/%Y');
+alter table layoffs_staging2 modify column `date` date;
 
 -- 3. Valores nulos o valores vacios
 
