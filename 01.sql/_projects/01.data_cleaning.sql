@@ -52,12 +52,12 @@ delete from layoffs_staging2 where row_num > 1;
 -- 2. Estandarizar los datos
 
 # remover espacios en blanco en la columna company
-update layoffs_staging2 set company = trim(company);
+update layoffs_staging2 set company = trim(company);	
 
 # normalizar las ocurrencias de `Crypto` en la columna industry
 update layoffs_staging2 set industry = 'Crypto' where industry like 'crypto%';
 
-# normalizar las ocurrencias de `United States` removiendo caracteres adicionales
+# normalizar las ocurrencias de `United States` removiendo caracteres adicionales en la columna country
 update layoffs_staging2 set country = trim(trailing '.' from country) where country = 'United States';
 
 # modificar formato del campo `date` a un campo de fecha valido
@@ -65,5 +65,7 @@ update layoffs_staging2 set `date` = str_to_date(`date`, '%m/%d/%Y');
 alter table layoffs_staging2 modify column `date` date;
 
 -- 3. Valores nulos o valores vacios
+delete FROM layoffs_staging2 where total_laid_off is null and percentage_laid_off is null;
 
 -- 4. Remover cualquier columna
+alter table layoffs_staging2 drop column row_num;
